@@ -8,13 +8,13 @@ const productRouter = Router();
 productRouter.use(bodyParser.json());
 
 // Endpoint para obtener todos los productos
-productRouter.get('/productos', async (req, res) => {
+productRouter.get('/', async (req, res) => {
   const allProducts = await productManager.read();
   res.json(allProducts);
 });
 
 // Endpoint para obtener un producto por ID
-productRouter.get('/productos/:id', async (req, res) => {
+productRouter.get('/:id', async (req, res) => {
   const productId = req.params.id;
   const product = await productManager.readOne(productId);
 
@@ -26,7 +26,7 @@ productRouter.get('/productos/:id', async (req, res) => {
 });
 
 // Endpoint para crear un nuevo producto
-productRouter.post('/api/products', async (req, res) => {
+productRouter.post('/', async (req, res) => {
   const productData = req.body;
 
   if (!productData) {
@@ -43,7 +43,7 @@ productRouter.post('/api/products', async (req, res) => {
 });
 
 // Endpoint para actualizar un producto por ID
-productRouter.put('/api/products/:pid', async (req, res) => {
+productRouter.put('/:pid', async (req, res) => {
   const productId = req.params.pid;
   const updatedData = req.body;
 
@@ -61,7 +61,7 @@ productRouter.put('/api/products/:pid', async (req, res) => {
 });
 
 // Endpoint para eliminar un producto por ID
-productRouter.delete('/api/products/:pid', async (req, res) => {
+productRouter.delete('/:pid', async (req, res) => {
   const productId = req.params.pid;
   try {
     await productManager.destroy(productId);
