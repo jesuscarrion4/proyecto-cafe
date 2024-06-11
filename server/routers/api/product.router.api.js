@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import bodyParser from 'body-parser';
-import productManager from "../../src/data/fs/productManager.js";
-//import propsProduct from "../../middlewares/propsproduct.js"
+import productManager from "../../src/productManager.js";
+
 
 const productRouter = Router();
 
