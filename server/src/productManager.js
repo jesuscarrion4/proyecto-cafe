@@ -1,6 +1,6 @@
-import { promises as fs } from 'fs';
-import { createHash } from 'crypto';
-import path from 'path';
+import { promises as fs } from "fs";
+import { createHash } from "crypto";
+import path from "path";
 
 class ProductManager {
   #products;
@@ -14,19 +14,26 @@ class ProductManager {
   async initialize() {
     try {
       await fs.mkdir(path.dirname(this.#filePath), { recursive: true });
-      const data = await fs.readFile(this.#filePath, 'utf-8');
+      const data = await fs.readFile(this.#filePath, "utf-8");
       this.#products = JSON.parse(data);
     } catch (error) {
-      console.error('Error al inicializar el gestor de productos:', error.message);
+      console.error(
+        "Error al inicializar el gestor de productos:",
+        error.message
+      );
     }
   }
 
   async saveToFile() {
     try {
-      await fs.writeFile(this.#filePath, JSON.stringify(this.#products, null, 2), 'utf-8');
-      console.log('Datos guardados en el archivo:', this.#filePath);
+      await fs.writeFile(
+        this.#filePath,
+        JSON.stringify(this.#products, null, 2),
+        "utf-8"
+      );
+      console.log("Datos guardados en el archivo:", this.#filePath);
     } catch (error) {
-      console.error('Error al guardar datos en el archivo:', error.message);
+      console.error("Error al guardar datos en el archivo:", error.message);
     }
   }
 
@@ -35,23 +42,28 @@ class ProductManager {
       await this.#simulateAsyncOperation();
 
       if (!data.title || !data.price || !data.stock) {
-        throw new Error('Los datos del producto son incompletos.');
+        throw new Error("Los datos del producto son incompletos.");
       }
 
       const newProduct = {
         id: await this.#generateId(),
         title: data.title,
-        photo: data.photo,
+        description: data.description,
         price: data.price,
+        img: data.img,
+        code: data.code,
         stock: data.stock,
+        category: data.category,
+        status: true,
+        thumbnails:  [],
       };
 
       this.#products.push(newProduct);
-      console.log('Producto creado exitosamente:', newProduct);
+      console.log("Producto creado exitosamente:", newProduct);
 
       await this.saveToFile();
     } catch (error) {
-      console.error('Error al crear el producto:', error.message);
+      console.error("Error al crear el producto:", error.message);
     }
   }
 
@@ -73,7 +85,7 @@ class ProductManager {
       console.log(`Producto con ID ${id}:`, foundProduct);
       return foundProduct;
     } catch (error) {
-      console.error('Error al buscar el producto:', error.message);
+      console.error("Error al buscar el producto:", error.message);
       return null;
     }
   }
@@ -81,19 +93,23 @@ class ProductManager {
   async destroy(id) {
     try {
       await this.#simulateAsyncOperation();
-      const indexToRemove = this.#products.findIndex((product) => product.id === id);
-  
+      const indexToRemove = this.#products.findIndex(
+        (product) => product.id === id
+      );
+
       if (indexToRemove === -1) {
-        console.log(`No se encontró ningún producto con ID ${id}. No se eliminó nada.`);
+        console.log(
+          `No se encontró ningún producto con ID ${id}. No se eliminó nada.`
+        );
         return;
       }
-  
+
       const removedProduct = this.#products.splice(indexToRemove, 1)[0];
       console.log(`Producto eliminado con éxito:`, removedProduct);
-  
+
       await this.saveToFile();
     } catch (error) {
-      console.error('Error al eliminar el producto:', error.message);
+      console.error("Error al eliminar el producto:", error.message);
     }
   }
 
@@ -101,10 +117,14 @@ class ProductManager {
     try {
       await this.#simulateAsyncOperation();
 
-      const productToUpdateIndex = this.#products.findIndex((product) => product.id === id);
+      const productToUpdateIndex = this.#products.findIndex(
+        (product) => product.id === id
+      );
 
       if (productToUpdateIndex === -1) {
-        console.log(`No se encontró ningún producto con ID ${id}. No se realizó ninguna actualización.`);
+        console.log(
+          `No se encontró ningún producto con ID ${id}. No se realizó ninguna actualización.`
+        );
         return;
       }
 
@@ -115,21 +135,21 @@ class ProductManager {
       };
 
       this.#products[productToUpdateIndex] = updatedProduct;
-      console.log('Producto actualizado con éxito:', updatedProduct);
+      console.log("Producto actualizado con éxito:", updatedProduct);
 
       await this.saveToFile();
     } catch (error) {
-      console.error('Error al actualizar el producto:', error.message);
+      console.error("Error al actualizar el producto:", error.message);
     }
   }
 
   async #generateId() {
     try {
-      const hash = createHash('sha256');
+      const hash = createHash("sha256");
       hash.update(Date.now().toString());
-      return hash.digest('hex').slice(0, 8); // Utiliza los primeros 8 caracteres para el ID
+      return hash.digest("hex").slice(0, 8); // Utiliza los primeros 8 caracteres para el ID
     } catch (error) {
-      console.error('Error al generar ID:', error.message);
+      console.error("Error al generar ID:", error.message);
     }
   }
 
@@ -140,7 +160,7 @@ class ProductManager {
   }
 }
 
-const filePath = './src/files/productos.json';
+const filePath = "./src/files/productos.json";
 const productManager = new ProductManager(filePath);
 
 (async () => {
@@ -148,21 +168,31 @@ const productManager = new ProductManager(filePath);
 
   // Agregar productos
   await productManager.create({
-    title: 'cafe americano',
-    photo: 'ruta/imagen1.jpg',
+    title: "cafe americano",
+    description: "description",
     price: 29.99,
+    img: "ruta/imagen1.jpg",
+    code: 10,
     stock: 50,
+    category: "category",
+    status: true,
+    thumbnails: []
   });
 
   await productManager.create({
-    title: 'cafe negro',
-    photo: 'ruta/imagen2.jpg',
-    price: 39.99,
-    stock: 30,
+    title: "cafe amarillo",
+    description: "description",
+    price: 29.99,
+    img: "ruta/imagen2.jpg",
+    code: 10,
+    stock: 50,
+    category: "category",
+    status: true,
+    thumbnails:  []
   });
 
   const allProducts = await productManager.read();
-  console.log('Todos los productos:', allProducts);
+  console.log("Todos los productos:", allProducts);
 
   const productIdToFind = 1;
   await productManager.readOne(productIdToFind);
@@ -170,7 +200,7 @@ const productManager = new ProductManager(filePath);
   // Actualizar un producto por ID
   const productIdToUpdate = 1;
   const updatedData = {
-    title: 'cafe descafeinado',
+    title: "cafe descafeinado",
     price: 49.99,
     stock: 20,
   };
@@ -178,7 +208,10 @@ const productManager = new ProductManager(filePath);
 
   // Mostrar todos los productos después de la actualización
   const updatedProducts = await productManager.read();
-  console.log('Todos los productos después de la actualización:', updatedProducts);
+  console.log(
+    "Todos los productos después de la actualización:",
+    updatedProducts
+  );
 
   // Eliminar un producto por ID
   const productIdToDelete = 1;
