@@ -5,7 +5,6 @@ class CartManager {
         this.path = path;
         this.carts = [];
         this.idCounter = 0;
-        this.init();
     }
 
     async init() {
@@ -19,7 +18,7 @@ class CartManager {
                 await this.write();
             }
         } catch (error) {
-            console.error(`Error al leer/el archivo ${this.path}: ${error}`);
+            console.error(`Error al leer el archivo ${this.path}: ${error}`);
         }
     }
 
@@ -32,11 +31,11 @@ class CartManager {
         }
     }
 
-    createCart() {
+    async createCart() {
         this.idCounter++;
         const cart = { id: this.idCounter, products: [] };
         this.carts.push(cart);
-        this.write(); // Guarda el carrito en el archivo JSON
+        await this.write(); // Asegúrate de esperar la operación de escritura
         return cart; // Devuelve el carrito recién creado
     }
 
@@ -46,18 +45,18 @@ class CartManager {
 
     getCartById(cid) {
         const cart = this.carts.find((cart) => cart.id == cid);
-        return cart || "Not found";
+        return cart || null;
     }
 
     async addProductToCart(cid, pid) {
         if (!pid) {
-            return "Missing product ID";
+            throw new Error("Missing product ID");
         }
 
         const cart = this.getCartById(cid);
 
-        if (cart === "Not found") {
-            return "Cart not found";
+        if (!cart) {
+            throw new Error("Cart not found");
         }
 
         const productIndex = cart.products.findIndex((prod) => prod.pid == pid);
@@ -76,19 +75,19 @@ class CartManager {
 
     async deleteProductFromCart(cid, pid) {
         if (!pid) {
-            return "Missing product ID";
+            throw new Error("Missing product ID");
         }
 
         const cart = this.getCartById(cid);
 
-        if (cart === "Not found") {
-            return "Cart not found";
+        if (!cart) {
+            throw new Error("Cart not found");
         }
 
         const productIndex = cart.products.findIndex((prod) => prod.pid == pid);
 
         if (productIndex === -1) {
-            return "Product not found in cart";
+            throw new Error("Product not found in cart");
         }
 
         if (cart.products[productIndex].quantity > 1) {
@@ -107,7 +106,7 @@ class CartManager {
         const index = this.carts.findIndex((cart) => cart.id == cid);
 
         if (index === -1) {
-            return "Not found";
+            throw new Error("Cart not found");
         }
 
         this.carts.splice(index, 1);

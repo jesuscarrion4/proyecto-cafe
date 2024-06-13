@@ -1,12 +1,5 @@
 [
   {
-    "id": "348b6ce7",
-    "title": "cafe americano",
-    "photo": "ruta/imagen1.jpg",
-    "price": 29.99,
-    "stock": 50
-  },
-  {
     "id": "435e4932",
     "title": "cafe negro",
     "photo": "ruta/imagen2.jpg",
@@ -128,6 +121,30 @@
     "price": 80.99,
     "img": "ruta/imagen5.jpg",
     "code": 85,
+    "stock": 50,
+    "category": "category",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": "f06149b4",
+    "title": "cafe americano",
+    "description": "description",
+    "price": 29.99,
+    "img": "ruta/imagen1.jpg",
+    "code": "10",
+    "stock": 50,
+    "category": "category",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": "6c636db9",
+    "title": "cafe amarillo",
+    "description": "description",
+    "price": 29.99,
+    "img": "ruta/imagen2.jpg",
+    "code": "11",
     "stock": 50,
     "category": "category",
     "status": true,

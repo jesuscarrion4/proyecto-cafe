@@ -17,10 +17,15 @@ class ProductManager {
       const data = await fs.readFile(this.#filePath, "utf-8");
       this.#products = JSON.parse(data);
     } catch (error) {
-      console.error(
-        "Error al inicializar el gestor de productos:",
-        error.message
-      );
+      if (error.code === 'ENOENT') {
+        console.warn("Archivo no encontrado, se creará uno nuevo.");
+        this.#products = [];
+      } else {
+        console.error(
+          "Error al inicializar el gestor de productos:",
+          error.message
+        );
+      }
     }
   }
 
@@ -41,8 +46,23 @@ class ProductManager {
     try {
       await this.#simulateAsyncOperation();
 
-      if (!data.title || !data.price || !data.stock) {
-        throw new Error("Los datos del producto son incompletos.");
+      // Validar que todos los datos sean proporcionados
+      const requiredFields = [
+        "title",
+        "description",
+        "price",
+        "img",
+        "code",
+        "stock",
+        "category",
+        "status",
+        "thumbnails"
+      ];
+
+      for (const field of requiredFields) {
+        if (!data.hasOwnProperty(field)) {
+          throw new Error(`El campo ${field} es obligatorio.`);
+        }
       }
 
       const newProduct = {
@@ -54,8 +74,8 @@ class ProductManager {
         code: data.code,
         stock: data.stock,
         category: data.category,
-        status: true,
-        thumbnails:  [],
+        status: data.status,
+        thumbnails: data.thumbnails,
       };
 
       this.#products.push(newProduct);
@@ -167,38 +187,42 @@ const productManager = new ProductManager(filePath);
   await productManager.initialize();
 
   // Agregar productos
-  await productManager.create({
-    title: "cafe americano",
-    description: "description",
-    price: 29.99,
-    img: "ruta/imagen1.jpg",
-    code: 10,
-    stock: 50,
-    category: "category",
-    status: true,
-    thumbnails: []
-  });
+  try {
+    await productManager.create({
+      title: "cafe americano",
+      description: "description",
+      price: 29.99,
+      img: "ruta/imagen1.jpg",
+      code: "10",
+      stock: 50,
+      category: "category",
+      status: true,
+      thumbnails: []
+    });
 
-  await productManager.create({
-    title: "cafe amarillo",
-    description: "description",
-    price: 29.99,
-    img: "ruta/imagen2.jpg",
-    code: 10,
-    stock: 50,
-    category: "category",
-    status: true,
-    thumbnails:  []
-  });
+    await productManager.create({
+      title: "cafe amarillo",
+      description: "description",
+      price: 29.99,
+      img: "ruta/imagen2.jpg",
+      code: "11",
+      stock: 50,
+      category: "category",
+      status: true,
+      thumbnails:  []
+    });
+  } catch (error) {
+    console.error("Error al agregar productos:", error.message);
+  }
 
   const allProducts = await productManager.read();
   console.log("Todos los productos:", allProducts);
 
-  const productIdToFind = 1;
+  const productIdToFind = allProducts[0].id;  // Utilizando el mismo tipo para IDs
   await productManager.readOne(productIdToFind);
 
   // Actualizar un producto por ID
-  const productIdToUpdate = 1;
+  const productIdToUpdate = allProducts[0].id; // Asegurando el ID correcto
   const updatedData = {
     title: "cafe descafeinado",
     price: 49.99,
@@ -214,7 +238,7 @@ const productManager = new ProductManager(filePath);
   );
 
   // Eliminar un producto por ID
-  const productIdToDelete = 1;
+  const productIdToDelete = allProducts[0].id; // Asegurando el ID correcto
   await productManager.destroy(productIdToDelete);
 })();
 

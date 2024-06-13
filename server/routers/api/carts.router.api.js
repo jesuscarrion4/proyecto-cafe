@@ -2,13 +2,19 @@ import { Router } from 'express';
 import CartManager from '../../src/cartManager.js';
 
 const cartsRouter = Router();
+const cartManager = new CartManager('./carts.json');
+
+// Inicializar el CartManager
+(async () => {
+    await cartManager.init();
+})();
 
 /**
  * Crea un nuevo carrito.
  */
 cartsRouter.post("/", async (req, res) => {
   try {
-    const cart = await CartManager.createCart();
+    const cart = await cartManager.createCart();
     res.status(201).json({ success: true, response: cart });
   } catch (error) {
     console.error(error);
@@ -21,8 +27,8 @@ cartsRouter.post("/", async (req, res) => {
  */
 cartsRouter.get("/:cid", (req, res) => {
   const { cid } = req.params;
-  const cart = CartManager.getCartById(cid);
-  if (typeof cart !== "object") {
+  const cart = cartManager.getCartById(cid);
+  if (!cart) {
     res.status(404).json({ success: false, response: "Cart not found" });
   } else {
     res.status(200).json({ success: true, response: cart });
@@ -35,13 +41,8 @@ cartsRouter.get("/:cid", (req, res) => {
 cartsRouter.post("/:cid/product/:pid", async (req, res) => {
   try {
     const { cid, pid } = req.params;
-    const quantity = parseInt(req.query.quantity) || 1;
-    const cart = await CartManager.addProductsToCart(cid, { pid, quantity });
-    if (typeof cart !== "object") {
-      res.status(500).json({ success: false, response: "Failed to add product to cart" });
-    } else {
-      res.status(200).json({ success: true, response: cart });
-    }
+    const cart = await cartManager.addProductToCart(cid, pid);
+    res.status(200).json({ success: true, response: cart });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
@@ -54,13 +55,8 @@ cartsRouter.post("/:cid/product/:pid", async (req, res) => {
 cartsRouter.delete("/:cid/product/:pid", async (req, res) => {
   try {
     const { cid, pid } = req.params;
-    const quantity = parseInt(req.query.quantity) || 0;
-    const cart = await CartManager.deleteProductFromCart(cid, { pid, quantity });
-    if (typeof cart !== "object") {
-      res.status(500).json({ success: false, response: "Failed to delete product from cart" });
-    } else {
-      res.status(200).json({ success: true, response: cart });
-    }
+    const cart = await cartManager.deleteProductFromCart(cid, pid);
+    res.status(200).json({ success: true, response: cart });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
@@ -73,12 +69,8 @@ cartsRouter.delete("/:cid/product/:pid", async (req, res) => {
 cartsRouter.delete("/:cid", async (req, res) => {
   try {
     const { cid } = req.params;
-    const cart = await CartManager.deleteCart(cid);
-    if (cart !== "Cart deleted") {
-      res.status(500).json({ success: false, response: "Failed to delete cart" });
-    } else {
-      res.status(200).json({ success: true, response: cart });
-    }
+    const result = await cartManager.deleteCart(cid);
+    res.status(200).json({ success: true, response: result });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
