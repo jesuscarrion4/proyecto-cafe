@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bodyParser from 'body-parser';
-import productManager from "../../src/productManager.js";
+import productManager from "../productManager.js";
 
 
 const productRouter = Router();
