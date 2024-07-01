@@ -3,28 +3,23 @@ const socket = io();
 document.getElementById('product-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const name = formData.get('name');
-    const price = formData.get('price');
+    const title = formData.get('title');
     const description = formData.get('description');
+    const price = formData.get('price');
+    const img = formData.get('img');
+    const code = formData.get('code');
+    const stock = formData.get('stock');
+    const category = formData.get('category');
+    const status = formData.get('status');
+    const thumbnails = formData.get('thumbnails');
 
     fetch('/products', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, price, description })
+        body: JSON.stringify({ title, description, price, img, code, stock, category, status, thumbnails })
     });
-});
-
-socket.on('newProduct', function(product) {
-    const productItem = document.createElement('li');
-    productItem.id = `product-${product.id}`;
-    productItem.className = 'product-item';
-    productItem.innerHTML = `<h2>${product.name}</h2>
-                             <p>${product.description}</p>
-                             <p>$${product.price}</p>
-                             <button onclick="deleteProduct(${product.id})">Eliminar</button>`;
-    document.getElementById('product-list').appendChild(productItem);
 });
 
 socket.on('updateProducts', function(products) {
@@ -34,10 +29,11 @@ socket.on('updateProducts', function(products) {
         const productItem = document.createElement('li');
         productItem.id = `product-${product.id}`;
         productItem.className = 'product-item';
-        productItem.innerHTML = `<h2>${product.name}</h2>
+        productItem.innerHTML = `<h2>${product.title}</h2>
                                  <p>${product.description}</p>
                                  <p>$${product.price}</p>
-                                 <button onclick="deleteProduct(${product.id})">Eliminar</button>`;
+                                 <img src="${product.img}" alt="${product.title}" width="100">
+                                 <button onclick="deleteProduct('${product.id}')">Eliminar</button>`;
         productList.appendChild(productItem);
     });
 });

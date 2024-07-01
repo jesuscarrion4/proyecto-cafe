@@ -1,62 +1,58 @@
-const express = require('express');
-const { create } = require('express-handlebars');
-const http = require('http');
-const socketIo = require('socket.io');
-const fs = require('fs');
-const path = require('path');
+import express from 'express';
+import { create } from 'express-handlebars';
+import http from 'http';
+import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import productRoutes from './src/routers/api/productRoutes.js';
+import cartsRouter from './src/routers/api/cartsRoutes.js';
+import ProductManager from './utils/productManager.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server);
 
 const hbs = create({
-    extname: '.handlebars',
-    defaultLayout: 'main',
-    layoutsDir: path.join(__dirname, 'views/layouts'),
+  extname: '.handlebars',
+  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, '../views/layouts'),
 });
+
+const productManager = new ProductManager(path.join(__dirname, 'files', 'productos.json'));
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
-let products = require('./products.json');
+// Set io instance in app
+app.set('io', io);
 
-app.get('/products', (req, res) => {
-    res.render('index', { products });
-});
+// Use the product routes
+app.use('/', productRoutes);
+app.use('/', cartsRouter);
 
-app.get('/realtimeproducts', (req, res) => {
-    res.render('realTimeProducts', { products });
-});
+io.on('connection', async (socket) => {
+  console.log('New client connected');
 
-app.post('/products', (req, res) => {
-    const { name, price, description } = req.body;
-    const newProduct = { id: products.length + 1, name, price, description };
-    products.push(newProduct);
-    fs.writeFileSync(path.join(__dirname, 'products.json'), JSON.stringify(products));
-    io.emit('newProduct', newProduct);
-    res.redirect('/products');
-});
+  socket.on('deleteProduct', async (id) => {
+    await productManager.destroy(id);
+    const products = await productManager.read();
+    io.emit('updateProducts', products);
+  });
 
-io.on('connection', (socket) => {
-    console.log('New client connected');
-    
-    socket.on('deleteProduct', (id) => {
-        products = products.filter(product => product.id !== id);
-        fs.writeFileSync(path.join(__dirname, 'products.json'), JSON.stringify(products));
-        io.emit('updateProducts', products);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    });
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
 });
 
 const PORT = 3000;
 server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

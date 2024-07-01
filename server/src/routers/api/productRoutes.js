@@ -6,6 +6,7 @@ import productManager from "../productManager.js";
 const productRouter = Router();
 
 productRouter.use(bodyParser.json());
+await productManager.initialize();
 
 // Endpoint para obtener todos los productos
 productRouter.get('/', async (req, res) => {
@@ -24,6 +25,12 @@ productRouter.get('/:id', async (req, res) => {
     res.status(404).json({ error: 'Producto no encontrado' });
   }
 });
+
+productRouter.get('/realtimeproducts', async (req, res) => {
+  const products = await productManager.read();
+  res.render('realTimeProducts', { products });
+});
+
 
 // Endpoint para crear un nuevo producto
 productRouter.post('/', async (req, res) => {

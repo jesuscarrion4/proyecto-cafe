@@ -2,17 +2,24 @@
 <ul id="product-list" class="product-list">
     {{#each products}}
     <li id="product-{{this.id}}" class="product-item">
-        <h2>{{this.name}}</h2>
+        <h2>{{this.title}}</h2>
         <p>{{this.description}}</p>
         <p>${{this.price}}</p>
-        <button onclick="deleteProduct({{this.id}})">Eliminar</button>
+        <img src="{{this.img}}" alt="{{this.title}}" width="100">
+        <button onclick="deleteProduct('{{this.id}}')">Eliminar</button>
     </li>
     {{/each}}
 </ul>
 <form id="product-form" class="product-form">
-    <input type="text" name="name" placeholder="Nombre del producto" required>
+    <input type="text" name="title" placeholder="Nombre del producto" required>
+    <input type="text" name="description" placeholder="Descripción" required>
     <input type="number" name="price" placeholder="Precio" required>
-    <textarea name="description" placeholder="Descripción" required></textarea>
+    <input type="text" name="img" placeholder="URL de la imagen" required>
+    <input type="text" name="code" placeholder="Código" required>
+    <input type="number" name="stock" placeholder="Stock" required>
+    <input type="text" name="category" placeholder="Categoría" required>
+    <input type="text" name="status" placeholder="Estado" required>
+    <input type="text" name="thumbnails" placeholder="Miniaturas" required>
     <button type="submit">Agregar Producto</button>
 </form>
 <script src="/socket.io/socket.io.js"></script>
