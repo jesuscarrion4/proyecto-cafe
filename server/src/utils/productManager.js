@@ -180,7 +180,7 @@ class ProductManager {
   }
 }
 
-const filePath = "./src/files/productos.json";
+const filePath = "../data/productos.json";
 const productManager = new ProductManager(filePath);
 
 (async () => {
@@ -242,4 +242,4 @@ const productManager = new ProductManager(filePath);
   await productManager.destroy(productIdToDelete);
 })();
 
-export default productManager;
+export default ProductManager;

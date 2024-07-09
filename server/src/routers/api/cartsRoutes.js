@@ -1,12 +1,17 @@
 import { Router } from 'express';
-import CartManager from '../cartManager.js';
+import CartManager from '../../utils/cartManager.js';
 
 const cartsRouter = Router();
-const cartManager = new CartManager('./carts.json');
+const cartManager = new CartManager('../data/carts.json');
 
 // Inicializar el CartManager
 (async () => {
-    await cartManager.init();
+    try {
+        await cartManager.init();
+        console.log('CartManager inicializado correctamente.');
+    } catch (error) {
+        console.error('Error al inicializar CartManager:', error.message);
+    }
 })();
 
 /**
@@ -17,7 +22,7 @@ cartsRouter.post("/", async (req, res) => {
     const cart = await cartManager.createCart();
     res.status(201).json({ success: true, response: cart });
   } catch (error) {
-    console.error(error);
+    console.error('Error al crear un nuevo carrito:', error.message);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
   }
 });
@@ -44,7 +49,7 @@ cartsRouter.post("/:cid/product/:pid", async (req, res) => {
     const cart = await cartManager.addProductToCart(cid, pid);
     res.status(200).json({ success: true, response: cart });
   } catch (error) {
-    console.error(error);
+    console.error('Error al agregar un producto al carrito:', error.message);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
   }
 });
@@ -58,7 +63,7 @@ cartsRouter.delete("/:cid/product/:pid", async (req, res) => {
     const cart = await cartManager.deleteProductFromCart(cid, pid);
     res.status(200).json({ success: true, response: cart });
   } catch (error) {
-    console.error(error);
+    console.error('Error al eliminar un producto del carrito:', error.message);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
   }
 });
@@ -72,7 +77,7 @@ cartsRouter.delete("/:cid", async (req, res) => {
     const result = await cartManager.deleteCart(cid);
     res.status(200).json({ success: true, response: result });
   } catch (error) {
-    console.error(error);
+    console.error('Error al eliminar un carrito:', error.message);
     res.status(500).json({ success: false, response: "Error interno del servidor" });
   }
 });

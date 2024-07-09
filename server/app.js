@@ -4,12 +4,15 @@ import http from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import displayRoutes from "express-routemap";
 import productRoutes from './src/routers/api/productRoutes.js';
 import cartsRouter from './src/routers/api/cartsRoutes.js';
-import ProductManager from './utils/productManager.js';
+import viewsRouter from './src/routers/api/views.router.js';
+import ProductManager from './src/utils/productManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 const app = express();
 const server = http.createServer(app);
@@ -25,7 +28,7 @@ const productManager = new ProductManager(path.join(__dirname, 'files', 'product
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', path.join(__dirname, '../src'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -37,6 +40,7 @@ app.set('io', io);
 // Use the product routes
 app.use('/', productRoutes);
 app.use('/', cartsRouter);
+app.use("/", viewsRouter);
 
 io.on('connection', async (socket) => {
   console.log('New client connected');
@@ -52,7 +56,8 @@ io.on('connection', async (socket) => {
   });
 });
 
-const PORT = 3000;
+const PORT = 8080;
 server.listen(PORT, () => {
+  displayRoutes(app)
   console.log(`Server is running on port ${PORT}`);
 });

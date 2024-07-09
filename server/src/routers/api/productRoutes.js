@@ -1,80 +1,105 @@
 import { Router } from 'express';
 import bodyParser from 'body-parser';
-import productManager from "../productManager.js";
-
+import ProductManager from '../../utils/productManager.js';
 
 const productRouter = Router();
-
 productRouter.use(bodyParser.json());
-await productManager.initialize();
 
-// Endpoint para obtener todos los productos
-productRouter.get('/', async (req, res) => {
-  const allProducts = await productManager.read();
-  res.json(allProducts);
+const filePath = '../data/productos.json';
+let productManager;
+
+async function initializeProductManager() {
+  try {
+    productManager = new ProductManager(filePath);
+    await productManager.initialize();
+  } catch (error) {
+    console.error('Error al inicializar ProductManager:', error.message);
+    throw error; // Propagar el error para que se maneje en otro lugar
+  }
+}
+
+// Middleware para asegurar que productManager esté inicializado antes de manejar las rutas
+productRouter.use(async (req, res, next) => {
+  if (!productManager) {
+    try {
+      await initializeProductManager();
+    } catch (error) {
+      return res.status(500).json({ error: 'Error al inicializar ProductManager.' });
+    }
+  }
+  next();
 });
 
-// Endpoint para obtener un producto por ID
-productRouter.get('/:id', async (req, res) => {
-  const productId = req.params.id;
-  const product = await productManager.readOne(productId);
-
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ error: 'Producto no encontrado' });
+// Endpoint para obtener todos los productos
+productRouter.get('/products', async (req, res) => {
+  try {
+    const products = await productManager.read();
+    res.json(products);
+  } catch (error) {
+    console.error('Error al obtener productos:', error.message);
+    res.status(500).json({ error: 'Error al obtener productos.' });
   }
 });
 
-productRouter.get('/realtimeproducts', async (req, res) => {
-  const products = await productManager.read();
-  res.render('realTimeProducts', { products });
+// Endpoint para obtener un producto por ID
+productRouter.get('/products/:id', async (req, res) => {
+  const productId = req.params.id;
+  try {
+    const product = await productManager.readOne(productId);
+    if (!product) {
+      return res.status(404).json({ error: `Producto con ID ${productId} no encontrado.` });
+    }
+    res.json(product);
+  } catch (error) {
+    console.error(`Error al obtener producto con ID ${productId}:`, error.message);
+    res.status(500).json({ error: `Error al obtener producto con ID ${productId}.` });
+  }
 });
 
-
 // Endpoint para crear un nuevo producto
-productRouter.post('/', async (req, res) => {
+productRouter.post('/products', async (req, res) => {
   const productData = req.body;
 
   if (!productData) {
-    res.status(400).json({ error: 'Datos del producto no proporcionados' });
-    return;
+    return res.status(400).json({ error: 'Datos del producto no proporcionados' });
   }
 
   try {
     await productManager.create(productData);
     res.json({ message: 'Producto creado exitosamente' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear el producto' });
+    console.error('Error al crear el producto:', error.message);
+    res.status(500).json({ error: 'Error al crear el producto.' });
   }
 });
 
 // Endpoint para actualizar un producto por ID
-productRouter.put('/:pid', async (req, res) => {
+productRouter.put('/products/:pid', async (req, res) => {
   const productId = req.params.pid;
   const updatedData = req.body;
 
   if (!updatedData) {
-    res.status(400).json({ error: 'Datos de actualización no proporcionados' });
-    return;
+    return res.status(400).json({ error: 'Datos de actualización no proporcionados' });
   }
 
   try {
     await productManager.update(productId, updatedData);
     res.json({ message: 'Producto actualizado exitosamente' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar el producto por ID' });
+    console.error(`Error al actualizar el producto con ID ${productId}:`, error.message);
+    res.status(500).json({ error: `Error al actualizar el producto con ID ${productId}.` });
   }
 });
 
 // Endpoint para eliminar un producto por ID
-productRouter.delete('/:pid', async (req, res) => {
+productRouter.delete('/products/:pid', async (req, res) => {
   const productId = req.params.pid;
   try {
     await productManager.destroy(productId);
     res.json({ message: 'Producto eliminado exitosamente' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar el producto por ID' });
+    console.error(`Error al eliminar el producto con ID ${productId}:`, error.message);
+    res.status(500).json({ error: `Error al eliminar el producto con ID ${productId}.` });
   }
 });
 
