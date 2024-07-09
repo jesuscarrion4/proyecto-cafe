@@ -28,7 +28,7 @@ const productManager = new ProductManager(path.join(__dirname, 'files', 'product
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, '../src'));
+app.set('views', path.join(__dirname, '../src/api/views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,8 +38,8 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.set('io', io);
 
 // Use the product routes
-app.use('/', productRoutes);
-app.use('/', cartsRouter);
+app.use('/api/products', productRoutes);
+app.use('/api/carts', cartsRouter);
 app.use("/", viewsRouter);
 
 io.on('connection', async (socket) => {

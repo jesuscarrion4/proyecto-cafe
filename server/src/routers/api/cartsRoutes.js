@@ -2,7 +2,7 @@ import { Router } from 'express';
 import CartManager from '../../utils/cartManager.js';
 
 const cartsRouter = Router();
-const cartManager = new CartManager('../data/carts.json');
+const cartManager = new CartManager('../server/src/data/carts.json');
 
 // Inicializar el CartManager
 (async () => {

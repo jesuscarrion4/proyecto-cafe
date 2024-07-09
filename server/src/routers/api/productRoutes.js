@@ -5,7 +5,7 @@ import ProductManager from '../../utils/productManager.js';
 const productRouter = Router();
 productRouter.use(bodyParser.json());
 
-const filePath = '../data/productos.json';
+const filePath = '../server/src/data/products.json';
 let productManager;
 
 async function initializeProductManager() {
@@ -31,7 +31,7 @@ productRouter.use(async (req, res, next) => {
 });
 
 // Endpoint para obtener todos los productos
-productRouter.get('/products', async (req, res) => {
+productRouter.get('/', async (req, res) => {
   try {
     const products = await productManager.read();
     res.json(products);
@@ -42,7 +42,7 @@ productRouter.get('/products', async (req, res) => {
 });
 
 // Endpoint para obtener un producto por ID
-productRouter.get('/products/:id', async (req, res) => {
+productRouter.get('/:id', async (req, res) => {
   const productId = req.params.id;
   try {
     const product = await productManager.readOne(productId);
@@ -57,7 +57,7 @@ productRouter.get('/products/:id', async (req, res) => {
 });
 
 // Endpoint para crear un nuevo producto
-productRouter.post('/products', async (req, res) => {
+productRouter.post('/', async (req, res) => {
   const productData = req.body;
 
   if (!productData) {
@@ -74,7 +74,7 @@ productRouter.post('/products', async (req, res) => {
 });
 
 // Endpoint para actualizar un producto por ID
-productRouter.put('/products/:pid', async (req, res) => {
+productRouter.put('/:pid', async (req, res) => {
   const productId = req.params.pid;
   const updatedData = req.body;
 
@@ -92,7 +92,7 @@ productRouter.put('/products/:pid', async (req, res) => {
 });
 
 // Endpoint para eliminar un producto por ID
-productRouter.delete('/products/:pid', async (req, res) => {
+productRouter.delete('/:pid', async (req, res) => {
   const productId = req.params.pid;
   try {
     await productManager.destroy(productId);
