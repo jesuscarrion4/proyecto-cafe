@@ -13,7 +13,6 @@ import ProductManager from './src/utils/productManager.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -21,23 +20,21 @@ const io = new Server(server);
 const hbs = create({
   extname: '.handlebars',
   defaultLayout: 'main',
-  layoutsDir: path.join(__dirname, '../views/layouts'),
+  layoutsDir: path.join(__dirname, 'src/views/layouts'),
 });
 
-const productManager = new ProductManager(path.join(__dirname, 'files', 'productos.json'));
+const productManager = new ProductManager(path.join(__dirname, 'src/data/productos.json'));
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, '../src/api/views'));
+app.set('views', path.join(__dirname, 'src/views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Set io instance in app
 app.set('io', io);
 
-// Use the product routes
 app.use('/api/products', productRoutes);
 app.use('/api/carts', cartsRouter);
 app.use("/", viewsRouter);
@@ -58,6 +55,6 @@ io.on('connection', async (socket) => {
 
 const PORT = 8080;
 server.listen(PORT, () => {
-  displayRoutes(app)
+  displayRoutes(app);
   console.log(`Server is running on port ${PORT}`);
 });

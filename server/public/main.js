@@ -13,7 +13,7 @@ document.getElementById('product-form').addEventListener('submit', function(e) {
     const status = formData.get('status');
     const thumbnails = formData.get('thumbnails');
 
-    fetch('/products', {
+    fetch('/api/products', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
