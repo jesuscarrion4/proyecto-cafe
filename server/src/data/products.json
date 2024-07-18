@@ -1,29 +1,5 @@
 [
   {
-    "id": "6f1c5b69",
-    "title": "cafe amarillo",
-    "description": "description",
-    "price": 29.99,
-    "img": "ruta/imagen2.jpg",
-    "code": "11",
-    "stock": 50,
-    "category": "category",
-    "status": true,
-    "thumbnails": []
-  },
-  {
-    "id": "bc243b8e",
-    "title": "cafe americano",
-    "description": "description",
-    "price": 29.99,
-    "img": "ruta/imagen1.jpg",
-    "code": "10",
-    "stock": 50,
-    "category": "category",
-    "status": true,
-    "thumbnails": []
-  },
-  {
     "id": "835968c2",
     "title": "cafe amarillo",
     "description": "description",
@@ -169,6 +145,78 @@
   },
   {
     "id": "c578798d",
+    "title": "cafe amarillo",
+    "description": "description",
+    "price": 29.99,
+    "img": "ruta/imagen2.jpg",
+    "code": "11",
+    "stock": 50,
+    "category": "category",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": "34fc6b3a",
+    "title": "cafe americano",
+    "description": "description",
+    "price": 29.99,
+    "img": "ruta/imagen1.jpg",
+    "code": "10",
+    "stock": 50,
+    "category": "category",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": "79ef6809",
+    "title": "cafe amarillo",
+    "description": "description",
+    "price": 29.99,
+    "img": "ruta/imagen2.jpg",
+    "code": "11",
+    "stock": 50,
+    "category": "category",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": "d5a05586",
+    "title": "jugo",
+    "description": "amarillo",
+    "price": "45",
+    "img": "https://static9.depositphotos.com/1642482/1148/i/950/depositphotos_11489364-stock-photo-ripe-orange.jpg",
+    "code": "383523",
+    "stock": "5",
+    "category": "drinks",
+    "status": "true",
+    "thumbnails": "no hay"
+  },
+  {
+    "id": "5995a972",
+    "title": "jugo",
+    "description": "amarillo",
+    "price": "45",
+    "img": "https://static9.depositphotos.com/1642482/1148/i/950/depositphotos_11489364-stock-photo-ripe-orange.jpg",
+    "code": "383523",
+    "stock": "5",
+    "category": "drinks",
+    "status": "true",
+    "thumbnails": "no hay"
+  },
+  {
+    "id": "08341c86",
+    "title": "cafe americano",
+    "description": "description",
+    "price": 29.99,
+    "img": "ruta/imagen1.jpg",
+    "code": "10",
+    "stock": 50,
+    "category": "category",
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": "213dcbee",
     "title": "cafe amarillo",
     "description": "description",
     "price": 29.99,
